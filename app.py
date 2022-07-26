@@ -5,25 +5,23 @@ app = Flask(__name__)
 
 from products import products
 
-@app.route("/ping")
-def ping():
-    return jsonify({"message":"'Pong!'"}) 
-    
+product_not_found_message="Product not Found!"
+
 @app.route("/products")
-def getProducts():
+def get_products():
     return jsonify(products)
 
 @app.route("/products/<string:product_name>")
-def getProduct(product_name):
-    productsFound = [product for product in products if product['name']==product_name]
+def get_product(product_name):
+    products_found = [product for product in products if product['name']==product_name]
 
-    if (len(productsFound)>0):
-        return jsonify(productsFound[0])
+    if (len(products_found)>0):
+        return jsonify(products_found[0])
 
-    return jsonify({"message":"Product not Found!"})
+    return jsonify({"message":product_not_found_message})
     
 @app.route("/products", methods=['POST'])
-def addProduct():
+def add_product():
     new_product = {
         "name":request.json['name'],
         "price":request.json['price'],
@@ -34,24 +32,24 @@ def addProduct():
     return jsonify({"message":"Product added","products":products})
 
 @app.route("/products/<string:product_name>", methods=['PUT'])
-def editProduct(product_name):
-    productsFound = [product for product in products if product['name']==product_name]
+def edit_product(product_name):
+    products_found = [product for product in products if product['name']==product_name]
 
-    if (len(productsFound)>0):
-        productsFound[0]['name']=request.json['name']
-        productsFound[0]['price']=request.json['price']
-        productsFound[0]['quantity']=request.json['quantity']
+    if (len(products_found)>0):
+        products_found[0]['name']=request.json['name']
+        products_found[0]['price']=request.json['price']
+        products_found[0]['quantity']=request.json['quantity']
         return jsonify({"messge":"Product updated","products":products})
-    return jsonify({"message":"Product not Found!"})
+    return jsonify({"message":product_not_found_message})
 
 @app.route("/products/<string:product_name>", methods=['DELETE'])
-def deleteProduct(product_name):
-    productsFound = [product for product in products if product['name']==product_name]
+def delete_product(product_name):
+    products_found = [product for product in products if product['name']==product_name]
 
-    if (len(productsFound)>0):        
-        products.remove(productsFound[0])
+    if (len(products_found)>0):        
+        products.remove(products_found[0])
         return jsonify({"messge":"Product deleted","products":products} )
-    return jsonify({"message":"Product not Found!"})
+    return jsonify({"message":product_not_found_message})
 
 if __name__ == '__main__':
     app.run(debug=True, port=4000)
